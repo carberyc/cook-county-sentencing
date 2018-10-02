@@ -1,9 +1,15 @@
 Overview
 --------
 
-The following
+This analysis examined sentencing harshness by Sentencing Judge in Cook
+County by analyzing 189,287 criminal charges in Cook County from the
+past eight years. We determine how each sentence a judge gives compares
+to the median (expected) sentence for the given charge to evaluate
+judicial harshness.
 
 ### Loading Data
+
+    library(dplyr)
 
     ## 
     ## Attaching package: 'dplyr'
@@ -16,6 +22,9 @@ The following
     ## 
     ##     intersect, setdiff, setequal, union
 
+    sentencing_dat <- read.csv(url("https://datacatalog.cookcountyil.gov/api/views/tg8v-tm6u/rows.csv?accessType=DOWNLOAD"))
+    judge_status <- read.csv('/Users/charliecarbery/Desktop/judge_by_status.csv')
+
 ### Cleaning Data
 
 We take three steps to clean our data:
@@ -24,10 +33,23 @@ We take three steps to clean our data:
     all sentences using the same units.
 -   Combine the ACT and Section fields into the new 'ASID' field. This
     allows us to have a unique key for each specific charge.
--   Merge the judge status (Retired, Active, or Retention) from
-    judge\_status.csv.
+-   Merge the judge status (Retired, Active, or Retention)
+    from judge\_status.csv.
 
 <!-- -->
+
+    clean_sentencing_dat <- 
+      sentencing_dat %>%
+      mutate(COMMITMENT_UNIT = case_when(COMMITMENT_UNIT == 'Year(s)' ~ 'YEARS',
+                                         TRUE ~ as.character(COMMITMENT_UNIT)),
+             COMMITMENT_TERM = case_when(COMMITMENT_UNIT == 'Months' ~ COMMITMENT_TERM/12.0,
+                                         COMMITMENT_UNIT == 'Days' ~ COMMITMENT_TERM/365.0,
+                                         TRUE ~ COMMITMENT_TERM)) %>%
+      mutate(COMMITMENT_UNIT = case_when(COMMITMENT_UNIT %in% c('Months','Days') ~ 'YEARS',
+                                         TRUE ~ COMMITMENT_UNIT),
+             ASID = paste(ACT,'-',SECTION)) %>%
+      mutate(judge_lower = tolower(gsub(" ","",SENTENCE_JUDGE))) %>%
+      left_join(judge_status, by = 'judge_lower')
 
     ## Warning: Column `judge_lower` joining character vector and factor, coercing
     ## into character vector

@@ -1,6 +1,6 @@
 ---
 title: "Cook County Sentencing by Judge"
-output: html_document
+output: md_document
 ---
 
 ```{r setup, include=FALSE}
@@ -9,15 +9,14 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Overview
 
-The following 
-
+This analysis examined sentencing harshness by Sentencing Judge in Cook County by analyzing 189,287 criminal charges in Cook County from the past eight years. We determine how each sentence a judge gives compares to the median (expected) sentence for the given charge to evaluate judicial harshness.
 
 ### Loading Data
 
-```{r load, echo=FALSE}
+```{r load, results="hide"}
 library(dplyr)
 sentencing_dat <- read.csv(url("https://datacatalog.cookcountyil.gov/api/views/tg8v-tm6u/rows.csv?accessType=DOWNLOAD"))
-judge_status <- read.csv('judge_by_status.csv')
+judge_status <- read.csv('/Users/charliecarbery/Desktop/judge_by_status.csv')
 ```
 
 ### Cleaning Data
@@ -28,7 +27,7 @@ We take three steps to clean our data:
 * Combine the ACT and Section fields into the new 'ASID' field. This allows us to have a unique key for each specific charge.
 * Merge the judge status (Retired, Active, or Retention) from judge_status.csv.
 
-```{r cleaning, echo = FALSE}
+```{r cleaning, results="hide"}
 clean_sentencing_dat <- 
   sentencing_dat %>%
   mutate(COMMITMENT_UNIT = case_when(COMMITMENT_UNIT == 'Year(s)' ~ 'YEARS',
