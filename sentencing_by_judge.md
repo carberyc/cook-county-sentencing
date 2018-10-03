@@ -81,7 +81,7 @@ criminal history) when using the median sentences to evaluate judges.
 For each judge, we look at every sentence and determine whether it is
 above, below, or at the courthouse level median for the specific charge.
 For this analysis, we are looking at all possible charges. We only
-included judges with more than 20 sentences to ensure meaningful sample
+included judges with more than 50 sentences to ensure meaningful sample
 size.
 
     overall_sentence_dist <- 
@@ -93,7 +93,7 @@ size.
       group_by(SENTENCE_JUDGE) %>%
       mutate(filter_count = n()) %>%
       ungroup() %>%
-      filter(filter_count > 20) %>%
+      filter(filter_count > 50) %>%
       select(SENTENCE_JUDGE, COURT_FACILITY, ASID, COMMITMENT_TERM, STATUS) %>%
       left_join(asid_median, by = c('ASID', 'COURT_FACILITY')) %>%
       mutate(over_median = ifelse(COMMITMENT_TERM > median_sentence, 1, 0),
@@ -113,7 +113,7 @@ size.
 For each judge, we look at every sentence and determine whether it is
 above, below, or at the courthouse level median for the specific charge.
 For this analysis, we are looking only at drug charges (Act 570). We
-only included judges with more than 20 sentences to ensure meaningful
+only included judges with more than 50 sentences to ensure meaningful
 sample size.
 
     drug_sentence_dist <- 
@@ -126,7 +126,7 @@ sample size.
       group_by(SENTENCE_JUDGE) %>%
       mutate(filter_count = n()) %>%
       ungroup() %>%
-      filter(filter_count > 20) %>%
+      filter(filter_count > 50) %>%
       select(SENTENCE_JUDGE, STATUS, COURT_FACILITY, ASID, COMMITMENT_TERM) %>%
       left_join(asid_median, by = c('ASID', 'COURT_FACILITY')) %>%
       mutate(over_median = ifelse(COMMITMENT_TERM > median_sentence, 1, 0),
